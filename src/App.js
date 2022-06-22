@@ -1,23 +1,51 @@
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Todo from './components/Todos/Todo'
+import NewTodo from './components/NewTodo/NewTodo'
+import reducer from '../reducers/index'
+
+const DUMMY_TODOS = [{
+  title: "Study",
+},
+{
+  title: "Read",
+},
+{
+  title: "Exercise",
+},
+{
+  title: "Coffe",
+}
+];
+
 
 function App() {
+  let initialState = reducer(undefined, {})
+
+  const [state, setState] = useLocalStorage(initialState, 'state')
+
+  const dispatch = (action) => {
+    setState(prevState => reducer(prevState, action))
+  }
+
+  let handleMarkDone = (id) => {
+    dispatch({type: 'MARK_DONE_TODO', id})
+  }
+
+  const [todos, setTodos] = useState(DUMMY_TODOS)
+
+  const addTodosHandler = todo => {
+    setTodos((prevTodos) => {
+      return [todo, ...prevTodos];
+    });
+  }
+
+  
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <NewTodo onAddTodos = {addTodosHandler} />
+      <Todo todos = {todos} handleMarkDone={handleMarkDone}/>
     </div>
   );
 }
